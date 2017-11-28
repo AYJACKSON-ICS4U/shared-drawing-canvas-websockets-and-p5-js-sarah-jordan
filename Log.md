@@ -1,14 +1,15 @@
-## What We've Learnt
+_:octocat::octocat::octocat::octocat::octocat::octocat::octocat::octocat::octocat::octocat:_
+# What We've Learnt
 
 We learned how to create our own host.
 We drew ellipses that follow the mouse on one canvas
 
-## What We Still Don't Know
+### What We Still Don't Know
 > How to share the server between us :metal: 
 
 > How to all edit at the same time :heart:
 
-## Creative Ideas
+### Creative Ideas
 Put in a Nature Of Code
 
 ex: Click and then it adds an object that spirals around.
