@@ -62,3 +62,97 @@ How to run it from two different computers
 ## Creative Ideas
 Herouku
 (Shiffman videos on twtter bots)
+
+## Our Code
+
+### Sketch.js:
+var socket;
+function setup() {
+	createCanvas(windowWidth, windowHeight);
+	socket = io.connect('http://localhost:3000');
+	socket.on('mouse', newDrawing);
+}
+
+function newDrawing(data){
+	noStroke();
+	fill(random(255), data.x, data.y);
+	ellipse(data.x, data.y, 30, 30);
+}
+
+function mouseDragged(){
+	console.log('Sending: ' + mouseX + ',' + mouseY);
+
+	var data ={
+		x: mouseX,
+		y: mouseY
+	}
+
+	socket.emit('mouse', data);
+
+	noStroke();
+	fill(random(255), mouseX, mouseY);
+	ellipse(mouseX, mouseY, 30, 30);
+}
+
+function draw() {
+}
+
+
+### Index.html:
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>our_server</title>
+
+	<script src="../libraries/p5.js"></script>
+	<script src="../libraries/p5.dom.js"></script>
+	<script src="../libraries/p5.sound.js"></script>
+	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+	<script src="sketch.js"></script>
+
+	<style>
+		body {
+      margin:0;
+			margin-left:45px;
+			padding:0;
+			overflow: hidden;
+		}
+		canvas {
+			margin:auto;
+		}
+	</style>
+</head>
+<body>
+</body>
+</html>
+
+### Server.js:
+var express = require('express');
+
+var app = express();
+var server = app.listen(3000);
+
+app.use(express.static('public'));
+
+console.log("Running");
+
+var socket = require('socket.io');
+
+var io = socket(server);
+
+io.sockets.on('connection', newConnection);
+
+function newConnection(socket){
+    console.log(newConnection + socket.id);
+    socket.on('mouse', mouseMessage);
+
+    function mouseMessage(data){
+      socket.broadcast.emit('mouse', data);
+      console.log(data);
+    }
+}
+
