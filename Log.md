@@ -47,3 +47,18 @@ var server = app.listen(3000);
 app.use(express.static('public'));
 
 console.log("Running");
+
+
+# Novemember 30th 2017 :octocat:
+------------------------------------------------------------------------------------------------------------------------------------------
+## What We've Learnt
+Sockets
+-Sending and receiving data
+
+
+## What We Still Don't Know
+How to run it from two different computers
+
+## Creative Ideas
+Herouku
+(Shiffman videos on twtter bots)
