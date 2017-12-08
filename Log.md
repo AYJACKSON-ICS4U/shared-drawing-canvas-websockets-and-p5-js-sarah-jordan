@@ -156,3 +156,129 @@ function newConnection(socket){
     }
 }
 
+# December 8th 2017 :octocat:
+------------------------------------------------------------------------------------------------------------------------------------------
+## What We've Learnt
+- How to use nature of code with our canvases
+
+
+## What We Still Don't Know
+- How to make it so that the walkers walk in the same direction (probably using multiple sockets?)
+
+## Creative Ideas
+Herouku
+(Shiffman videos on twtter bots)
+
+## Our Code
+
+### Sketch.js:
+var socket;
+
+function setup() {
+	createCanvas(windowWidth, windowHeight);
+	background(50, 50, 50);
+	socket = io.connect('http://localhost:3000');
+	socket.on('mouse', newDrawing);
+}
+var Walker = function(x, y, c) {
+    this.position = createVector(x, y);
+    this.colour = c;
+}
+
+Walker.prototype.display = function() {
+    strokeWeight(3);
+    stroke(this.colour, random(255),random(255));
+    point(this.position.x, this.position.y);
+}
+
+Walker.prototype.walk = function() {
+    var StepSize = createVector(random(-5, 5),random(-5, 5));
+    this.position.add(StepSize);
+}
+
+var w = [];
+var i = 0;
+
+function mousePressed(){
+	console.log('Sending: ' + mouseX + ',' + mouseY);
+	w[i] = new Walker(mouseX, mouseY, random(255));
+	i++;
+	var data ={
+		x: mouseX,
+		y: mouseY
+	}
+
+	socket.emit('mouse', data);
+
+}
+
+function newDrawing(data){
+	w[i] = new Walker(data.x, data.y, random(255));
+	i++;
+}
+
+draw = function() {
+    for (var z = 0; z <w.length; z++){
+        w[z].walk();
+        w[z].display();
+    }
+}
+### Index.html:
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>our_server</title>
+
+	<script src="../libraries/p5.js"></script>
+	<script src="../libraries/p5.dom.js"></script>
+	<script src="../libraries/p5.sound.js"></script>
+	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+	<script src="sketch.js"></script>
+
+	<style>
+		body {
+      margin:0;
+			margin-left:45px;
+			padding:0;
+			overflow: hidden;
+		}
+		canvas {
+			margin:auto;
+		}
+	</style>
+</head>
+<body>
+</body>
+</html>
+
+### Server.js:
+var express = require('express');
+
+var app = express();
+var server = app.listen(3000);
+
+app.use(express.static('public'));
+
+console.log("Running");
+
+var socket = require('socket.io');
+
+var io = socket(server);
+
+io.sockets.on('connection', newConnection);
+
+function newConnection(socket){
+    console.log(newConnection + socket.id);
+    socket.on('mouse', mouseMessage);
+
+    function mouseMessage(data){
+      socket.broadcast.emit('mouse', data);
+      console.log(data);
+    }
+}
+
+
